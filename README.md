@@ -188,9 +188,9 @@ flutter build apk --release
 
 ##  Fitur Utama
 
-1. **Splash Screen** → Nama + NIM + delay 7 detik
-2. **Katalog Produk** → FakeStore API via Dio, semua produk bertuliskan "[Diskon 10%]"
-3. **Bookmark** → Isar Database, reaktif real-time via watch(), ada timestamp
-4. **Crypto Hub** → Bitcoin real-time via WebSocket CoinCap
-5. **Kalkulasi Pajak** → Isolate compute 170 juta iterasi tanpa freeze UI
-6. **Native** → Baca baterai + Toast Android via MethodChannel Kotlin
+1. Splash Screen → Nama + NIM + delay 7 detik
+2. Katalog Produk → FakeStore API via Dio, semua produk bertuliskan "[Diskon 10%]"
+3. Bookmark → Isar Database, reaktif real-time via watch(), ada timestamp
+4. Crypto Hub → Bitcoin real-time via WebSocket CoinCap
+5. Kalkulasi Pajak → Isolate compute 170 juta iterasi tanpa freeze UI
+6. Native → Baca baterai + Toast Android via MethodChannel Kotlin
