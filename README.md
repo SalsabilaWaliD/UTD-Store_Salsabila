@@ -8,7 +8,7 @@
 ---
 
 <<<<<<< HEAD
-## 📊 Analisis Logika Personal (Berdasarkan NIM 20123017)
+## Analisis Logika Personal (Berdasarkan NIM 20123017)
 
 | NIM | Digit Terakhir | Parity | Splash Delay | Label Produk |
 |-----|---------------|--------|-------------|-------------|
@@ -20,7 +20,7 @@
 
 ---
 
-## 🏗️ Arsitektur: Clean Architecture
+## Arsitektur: Clean Architecture
 =======
 ## Analisis Logika Personal (Berdasarkan NIM 20123017)
 
@@ -84,7 +84,7 @@ lib/
 ---
 
 <<<<<<< HEAD
-## 🔥 Logika Personal Per Fitur
+## Logika Personal Per Fitur
 
 ### 1. Splash Screen
 - **File:** `lib/domain/usecases/splash_service.dart`
@@ -126,7 +126,7 @@ lib/
 
 ---
 
-## 📝 Rencana Commit GitHub (Minimal 10 commit berbeda waktu)
+## Rencana Commit GitHub (Minimal 10 commit berbeda waktu)
 
 ```bash
 # Commit 1 (Hari 1 pagi)
@@ -168,7 +168,7 @@ git commit -m "chore: build release apk and final cleanup"
 
 ---
 
-## 🚀 Cara Menjalankan
+##  Cara Menjalankan
 
 ```bash
 # Install dependencies
@@ -186,7 +186,7 @@ flutter build apk --release
 
 ---
 
-## 📱 Fitur Utama
+##  Fitur Utama
 
 1. **Splash Screen** → Nama + NIM + delay 7 detik
 2. **Katalog Produk** → FakeStore API via Dio, semua produk bertuliskan "[Diskon 10%]"
