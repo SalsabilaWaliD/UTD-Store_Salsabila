@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../cubits/bookmark/bookmark_cubit.dart';
+import '../cubits/bookmark/bookmark_cubit.dart';
 import '../../../domain/entities/product_entity.dart';
 
 class ProductCard extends StatefulWidget {

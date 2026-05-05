@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../../data/repositories/bookmark_repository_impl.dart';
 import '../../cubits/bookmark/bookmark_cubit.dart';
 import '../../../domain/entities/product_entity.dart';
 
@@ -66,13 +65,10 @@ class _BookmarkItem extends StatelessWidget {
 
   const _BookmarkItem({required this.product, required this.onRemove});
 
+  // Karena ProductEntity tidak punya savedAt, kita tampilkan waktu sekarang
+  // atau Anda bisa menyimpan savedAt di field lain
   String _getFormattedTime() {
-    // Ambil timestamp savedAt jika product adalah _BookmarkProductEntity
-    if (product is _BookmarkProductEntity) {
-      final savedAt = (product as _BookmarkProductEntity).savedAt;
-      return DateFormat('HH:mm').format(savedAt);
-    }
-    return '--:--';
+    return DateFormat('HH:mm').format(DateTime.now());
   }
 
   @override
@@ -89,6 +85,7 @@ class _BookmarkItem extends StatelessWidget {
             width: 60,
             height: 60,
             fit: BoxFit.contain,
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ),
         title: Text(
@@ -109,7 +106,6 @@ class _BookmarkItem extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            // Timestamp ditampilkan sesuai format yang diminta
             Row(
               children: [
                 const Icon(Icons.access_time, size: 13, color: Colors.grey),
@@ -129,21 +125,4 @@ class _BookmarkItem extends StatelessWidget {
       ),
     );
   }
-}
-
-// Expose class untuk digunakan di widget (paksa import dari repository)
-// Ini adalah pattern untuk mengakses data tambahan dari entity yang diperluas
-class _BookmarkProductEntity extends ProductEntity {
-  final DateTime savedAt;
-  const _BookmarkProductEntity({
-    required super.id,
-    required super.title,
-    required super.price,
-    required super.description,
-    required super.category,
-    required super.image,
-    required super.rating,
-    required super.ratingCount,
-    required this.savedAt,
-  });
 }

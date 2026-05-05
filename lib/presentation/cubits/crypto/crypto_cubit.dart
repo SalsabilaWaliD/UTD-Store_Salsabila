@@ -7,62 +7,90 @@ import '../../../data/datasources/crypto_remote_datasource.dart';
 part 'crypto_state.dart';
 
 class CryptoCubit extends Cubit<CryptoState> {
-  final CryptoRemoteDataSource _cryptoDataSource;
-  StreamSubscription? _subscription;
+  final CryptoRemoteDataSource _dataSource;
+  StreamSubscription? _webSocketSubscription;
+  Isolate? _currentIsolate;
+  ReceivePort? _receivePort;
+  
+  double _currentPrice = 0;
 
-  CryptoCubit(this._cryptoDataSource) : super(CryptoInitial());
+  CryptoCubit(this._dataSource) : super(CryptoStateInitial());
 
-  void connectWebSocket() {
-    emit(CryptoConnecting());
-    _subscription = _cryptoDataSource.getBitcoinPriceStream().listen(
-      (price) => emit(CryptoPriceUpdated(price, state is CryptoTaxCalculating)),
-      onError: (e) => emit(CryptoError(e.toString())),
+  Future<void> connectWebSocket() async {
+    emit(CryptoStateLoading());
+    
+    _webSocketSubscription?.cancel();
+    _webSocketSubscription = _dataSource.getBitcoinPriceStream().listen(
+      (price) {
+        _currentPrice = price;
+        emit(CryptoStateLoaded(btcPrice: price, taxPrice: null));
+      },
+      onError: (e) => emit(CryptoStateError(e.toString())),
     );
   }
-
-  /// Kalkulasi Pajak Kripto menggunakan Isolate (background worker).
-  ///
-  /// LOGIKA PERSONAL NIM 20123017:
-  /// 2 digit terakhir NIM = 17
-  /// Isolate melakukan looping penjumlahan sebanyak: 17 × 10.000.000 = 170.000.000 kali
-  ///
-  /// Syarat lulus: Animasi harga Bitcoin TIDAK BOLEH freeze saat looping berjalan!
-  Future<void> calculateCryptoTax(double currentPrice) async {
-    final currentPriceVal = currentPrice;
-
-    // Emit state calculating (flag agar UI tahu isolate sedang berjalan)
-    emit(CryptoTaxCalculating(currentPriceVal));
-
-    // Jalankan di Isolate terpisah agar UI thread tetap responsif
-    final result = await compute(_isolateTaxCalculation, currentPriceVal);
-
-    emit(CryptoTaxResult(currentPriceVal, result));
+  
+  Future<void> calculateCryptoTax(double price) async {
+    _cleanupIsolate();
+    
+    try {
+      _receivePort = ReceivePort();
+      _currentIsolate = await Isolate.spawn(
+        _heavyCalculation,
+        _IsolateParams(
+          price: price,
+          iterations: 170000000, // 17 × 10.000.000
+          sendPort: _receivePort!.sendPort,
+        ),
+      );
+      
+      final result = await _receivePort!.first.timeout(
+        Duration(seconds: 10),
+        onTimeout: () => throw TimeoutException('Kalkulasi terlalu lama'),
+      );
+      
+      emit(CryptoStateLoaded(btcPrice: _currentPrice, taxPrice: result as double));
+    } catch (e) {
+      emit(CryptoStateError(e.toString()));
+    } finally {
+      _cleanupIsolate();
+    }
   }
-
+  
+  void _cleanupIsolate() {
+    _receivePort?.close();
+    _currentIsolate?.kill(priority: Isolate.immediate);
+    _currentIsolate = null;
+    _receivePort = null;
+  }
+  
+  static void _heavyCalculation(_IsolateParams params) {
+    double result = params.price;
+    for (int i = 0; i < params.iterations; i++) {
+      result = result * 1.000000001;
+    }
+    params.sendPort.send(result);
+  }
+  
+  void disconnectWebSocket() {
+    _webSocketSubscription?.cancel();
+    _cleanupIsolate();
+  }
+  
   @override
   Future<void> close() {
-    _subscription?.cancel();
-    _cryptoDataSource.dispose();
+    disconnectWebSocket();
     return super.close();
   }
 }
 
-/// Fungsi ini dijalankan di Isolate terpisah (background).
-/// Tidak boleh menggunakan state Cubit di sini.
-///
-/// Logika: looping 17 × 10.000.000 = 170.000.000 kali
-/// NIM: 20123017 → 2 digit terakhir = 17
-double _isolateTaxCalculation(double bitcoinPrice) {
-  const int nimTwoLastDigits = 17; // dari NIM 20123017
-  const int multiplier = 10000000;
-  final int totalLoops = nimTwoLastDigits * multiplier; // 170.000.000
-
-  double sum = 0;
-  for (int i = 0; i < totalLoops; i++) {
-    sum += 1;
-  }
-
-  // Hitung pajak kripto: 0.1% dari harga Bitcoin × total loop sebagai simulasi
-  const double taxRate = 0.001; // 0.1% pajak kripto
-  return bitcoinPrice * taxRate;
+class _IsolateParams {
+  final double price;
+  final int iterations;
+  final SendPort sendPort;
+  
+  _IsolateParams({
+    required this.price,
+    required this.iterations,
+    required this.sendPort,
+  });
 }

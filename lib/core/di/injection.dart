@@ -56,5 +56,5 @@ Future<void> setupDependencies() async {
   // ── Cubits ─────────────────────────────────────────────────
   sl.registerFactory(() => ProductCubit(sl<GetProductsUseCase>()));
   sl.registerFactory(() => BookmarkCubit(sl<BookmarkRepository>()));
-  sl.registerFactory(() => CryptoCubit(sl<CryptoRemoteDataSource>()));
+  ssl.registerFactory(() => CryptoCubit(sl<CryptoRemoteDataSource>()));
 }
