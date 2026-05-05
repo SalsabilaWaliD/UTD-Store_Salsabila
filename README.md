@@ -7,6 +7,7 @@
 
 ---
 
+<<<<<<< HEAD
 ## 📊 Analisis Logika Personal (Berdasarkan NIM 20123017)
 
 | NIM | Digit Terakhir | Parity | Splash Delay | Label Produk |
@@ -20,10 +21,26 @@
 ---
 
 ## 🏗️ Arsitektur: Clean Architecture
+=======
+## Analisis Logika Personal (Berdasarkan NIM 20123017)
+
+| NIM      | Digit Terakhir | Parity | Splash Delay| Label Produk |
+|----------|----------------|--------|-------------|--------------|
+| 20123017 |        7       | Ganjil |   7 detik   | [Diskon 10%] |
+
+|    NIM   | 2 Digit Terakhir |                 Isolate Loop              |
+|----------|------------------|-------------------------------------------|
+| 20123017 |         17       | **17 × 10.000.000 = 170.000.000 iterasi** |
+
+---
+
+## Arsitektur: Clean Architecture
+>>>>>>> fba67f8481eee2ed4e5aa6739913c42b39d80007
 
 ```
 lib/
 ├── core/               # Infrastruktur (DI, Router, Network)
+<<<<<<< HEAD
 │   ├── di/             → injection.dart (GetIt)
 │   ├── router/         → app_router.dart (GoRouter)
 │   └── network/        → dio_client.dart (Dio + Interceptor)
@@ -42,10 +59,31 @@ lib/
     ├── screens/        → splash, home, bookmark, crypto
     ├── widgets/        → product_card.dart
     └── cubits/         → product, bookmark, crypto cubits
+=======
+│   ├── di/              injection.dart (GetIt)
+│   ├── router/          app_router.dart (GoRouter)
+│   └── network/         dio_client.dart (Dio + Interceptor)
+│
+├── domain/             # Business Logic (Pure Dart)
+│   ├── entities/        product_entity.dart
+│   ├── repositories/    abstract interfaces
+│   └── usecases/        get_products_usecase.dart, splash_service.dart
+│
+├── data/               # Implementasi (API, DB)
+│   ├── models/          product_model.dart, bookmark_model.dart (Isar)
+│   ├── datasources/     product_remote_datasource.dart, crypto_remote_datasource.dart
+│   └── repositories/    implementasi konkret
+│
+└── presentation/       # UI Layer
+    ├── screens/         splash, home, bookmark, crypto
+    ├── widgets/         product_card.dart
+    └── cubits/          product, bookmark, crypto cubits
+>>>>>>> fba67f8481eee2ed4e5aa6739913c42b39d80007
 ```
 
 ---
 
+<<<<<<< HEAD
 ## 🔥 Logika Personal Per Fitur
 
 ### 1. Splash Screen
@@ -56,6 +94,18 @@ lib/
 ### 2. Manipulasi Data Produk
 - **File:** `lib/data/repositories/product_repository_impl.dart`
 - Digit terakhir = 7 (Ganjil) → tambahkan **"[Diskon 10%]"** di belakang nama produk
+=======
+## Logika Personal Per Fitur
+
+### 1. Splash Screen
+- File: `lib/domain/usecases/splash_service.dart`
+- Delay = digit terakhir NIM = 7 detik
+- Logika delay di level Domain/Service, BUKAN di UI
+
+### 2. Manipulasi Data Produk
+- File: `lib/data/repositories/product_repository_impl.dart`
+- Digit terakhir = 7 (Ganjil) → tambahkan "[Diskon 10%]" di belakang nama produk
+>>>>>>> fba67f8481eee2ed4e5aa6739913c42b39d80007
 - Dilakukan di layer Repository, BUKAN di Widget UI
 
 ### 3. Timestamp Bookmark
